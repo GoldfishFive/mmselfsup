@@ -5,14 +5,14 @@ from .processing import (BEiTMaskGenerator, ColorJitter, RandomCrop,
                          RandomResizedCrop,
                          RandomResizedCropAndInterpolationWithTwoPic,
                          RandomRotation, RandomSolarize, RotationWithLabels,
-                         SimMIMMaskGenerator)
+                         SimMIMMaskGenerator, SegMAEMaskGenerator)
 from .pytorch_transform import MAERandomResizedCrop
 from .wrappers import MultiView
 
 __all__ = [
     'PackSelfSupInputs', 'RandomGaussianBlur', 'RandomSolarize',
     'SimMIMMaskGenerator', 'BEiTMaskGenerator', 'ColorJitter',
-    'RandomResizedCropAndInterpolationWithTwoPic', 'PackSelfSupInputs',
+    'RandomResizedCropAndInterpolationWithTwoPic',
     'MultiView', 'RotationWithLabels', 'RandomPatchWithLabels',
-    'RandomRotation', 'RandomResizedCrop', 'RandomCrop', 'MAERandomResizedCrop'
+    'RandomRotation', 'RandomResizedCrop', 'RandomCrop', 'MAERandomResizedCrop', 'SegMAEMaskGenerator'
 ]

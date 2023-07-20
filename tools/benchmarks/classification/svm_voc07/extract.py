@@ -21,6 +21,7 @@ from torch.utils.data import DataLoader
 from mmselfsup.models.utils import Extractor
 from mmselfsup.registry import DATA_SAMPLERS, DATASETS, MODELS
 
+from mmselfsup.utils import register_all_modules
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -70,8 +71,11 @@ def main():
     cfg = Config.fromfile(args.config)
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)
-
-    init_default_scope(cfg.get('default_scope', 'mmselfsup'))
+    print(cfg)
+    # register all modules in mmselfsup into the registries
+    # do not init the default scope here because it will be init in the runner
+    register_all_modules(init_default_scope=True)
+    # init_default_scope(cfg.get('default_scope', 'mmselfsup'))
 
     # set cudnn_benchmark
     if cfg.env_cfg.get('cudnn_benchmark', False):

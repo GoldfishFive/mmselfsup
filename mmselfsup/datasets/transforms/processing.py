@@ -15,6 +15,7 @@ from mmcv.transforms import BaseTransform
 from PIL import Image, ImageFilter
 
 from mmselfsup.registry import TRANSFORMS
+from skimage.segmentation import felzenszwalb
 
 
 def check_sequence_input(x: Sequence, name: str, req_sizes: tuple) -> None:
@@ -100,6 +101,61 @@ class SimMIMMaskGenerator(BaseTransform):
         repr_str += f'mask_patch_size={self.mask_patch_size}, '
         repr_str += f'model_patch_size={self.model_patch_size}, '
         repr_str += f'mask_ratio={self.mask_ratio})'
+        return repr_str
+
+@TRANSFORMS.register_module()
+class SegMAEMaskGenerator(BaseTransform):
+    """Generate random block mask for each Image.
+
+    Added Keys:
+
+    - mask
+
+    This module is used in SimMIM to generate masks.
+
+    Args:
+        input_size (int): Size of input image. Defaults to 192.
+        mask_patch_size (int): Size of each block mask. Defaults to 32.
+        model_patch_size (int): Patch size of each token. Defaults to 4.
+        mask_ratio (float): The mask ratio of image. Defaults to 0.6.
+    """
+    def __init__(self,
+                 sigma: float = 0.8,
+                 kernel: int = 11,
+                 num_of_partitions: int = 500,
+                 min_area_size: int = 500
+                 ) -> None:
+
+        self.sigma = sigma
+        self.kernel = kernel
+        self.K = num_of_partitions
+        self.min_size = min_area_size
+        assert self.kernel % 2 == 1
+
+    def transform(self, results: dict) -> dict:
+        """Method to generate random block mask for each Image in SimMIM.
+
+        Args:
+            results (dict): Result dict from previous pipeline.
+
+        Returns:
+            dict: Result dict with added key ``seg_mask`` ``num_of_objects``.
+        """
+        img = results['img']
+        seg = felzenszwalb(img, scale=self.K, sigma=self.sigma, min_size=self.min_size)
+        num_of_objects = len(np.unique(seg))
+
+        results['seg_mask'] = seg
+        results['num_of_objects'] = num_of_objects
+
+        return results
+
+    def __repr__(self) -> str:
+        repr_str = self.__class__.__name__
+        repr_str += f'sigma={self.sigma}, '
+        repr_str += f'kernel={self.kernel}, '
+        repr_str += f'num_of_partitions={self.K})'
+        repr_str += f'min_size={self.min_size})'
         return repr_str
 
 
@@ -835,6 +891,192 @@ class ColorJitter(BaseTransform):
         repr_str += f'saturation={self.hue})'
         return repr_str
 
+@TRANSFORMS.register_module()
+class LoadFHSegMap(BaseTransform):
+    def __init__(self) -> None:
+        super().__init__()
+        self.seg_map_path = ''
+
+    def transform(self, results: dict) -> dict:
+
+        map_path = results['fh_seg']
+        # seg_map = np.load(map_path, allow_pickle=True)
+        seg_map = np.load(map_path, allow_pickle=True).item()
+        results['gt_seg_mask'] = seg_map['seg']
+        results['num_of_objects'] = seg_map['num_parts']
+        return results
+
+    def __repr__(self) -> str:
+        repr_str = self.__class__.__name__ + f'(size={self.seg_map_path})'
+        return repr_str
+
+
+@TRANSFORMS.register_module()
+class SegRandomResizedCrop(BaseTransform):
+    """Crop the given image to random size and aspect ratio.
+
+    A crop of random size (default: of 0.08 to 1.0) of the original size and a
+    random aspect ratio (default: of 3/4 to 4/3) of the original aspect ratio
+    is made. This crop is finally resized to given size.
+
+    Required Keys:
+
+    - img
+
+    Modified Keys:
+
+    - img
+    - img_shape
+
+    Args:
+        size (Sequence | int): Desired output size of the crop. If size is an
+            int instead of sequence like (h, w), a square crop (size, size) is
+            made.
+        scale (Tuple): Range of the random size of the cropped image compared
+            to the original image. Defaults to (0.08, 1.0).
+        ratio (Tuple): Range of the random aspect ratio of the cropped image
+            compared to the original image. Defaults to (3. / 4., 4. / 3.).
+        max_attempts (int): Maximum number of attempts before falling back to
+            Central Crop. Defaults to 10.
+        interpolation (str): Interpolation method, accepted values are
+            'nearest', 'bilinear', 'bicubic', 'area', 'lanczos'. Defaults to
+            'bilinear'.
+        backend (str): The image resize backend type, accepted values are
+            `cv2` and `pillow`. Defaults to `cv2`.
+    """
+
+    def __init__(self,
+                 size: Union[int, Sequence[int]],
+                 scale: Tuple = (0.08, 1.0),
+                 ratio: Tuple = (3. / 4., 4. / 3.),
+                 max_attempts: int = 10,
+                 interpolation: str = 'bilinear',
+                 backend: str = 'cv2') -> None:
+        super().__init__()
+        if isinstance(size, (tuple, list)):
+            self.size = size
+        else:
+            self.size = (size, size)
+
+        if (scale[0] > scale[1]) or (ratio[0] > ratio[1]):
+            raise ValueError('range should be of kind (min, max). '
+                             f'But received scale {scale} and rato {ratio}.')
+        assert isinstance(max_attempts, int) and max_attempts >= 0, \
+            'max_attempts mush be int and no less than 0.'
+        assert interpolation in ('nearest', 'bilinear', 'bicubic', 'area',
+                                 'lanczos')
+        if backend not in ['cv2', 'pillow']:
+            raise ValueError(f'backend: {backend} is not supported for resize.'
+                             'Supported backends are "cv2", "pillow"')
+
+        self.scale = scale
+        self.ratio = ratio
+        self.max_attempts = max_attempts
+        self.interpolation = interpolation
+        self.backend = backend
+
+    @staticmethod
+    def get_params(img: np.ndarray,
+                   scale: Tuple,
+                   ratio: Tuple,
+                   max_attempts: int = 10) -> Tuple[int, int, int, int]:
+        """Get parameters for ``crop`` for a random sized crop.
+
+        Args:
+            img (np.ndarray): Image to be cropped.
+            scale (Tuple): Range of the random size of the cropped image
+                compared to the original image size.
+            ratio (Tuple): Range of the random aspect ratio of the cropped
+                image compared to the original image area.
+            max_attempts (int): Maximum number of attempts before falling back
+                to central crop. Defaults to 10.
+
+        Returns:
+            tuple: Params (ymin, xmin, ymax, xmax) to be passed to `crop` for
+                a random sized crop.
+        """
+        height = img.shape[0]
+        width = img.shape[1]
+        area = height * width
+
+        for _ in range(max_attempts):
+            target_area = random.uniform(*scale) * area
+            log_ratio = (math.log(ratio[0]), math.log(ratio[1]))
+            aspect_ratio = math.exp(random.uniform(*log_ratio))
+
+            target_width = int(round(math.sqrt(target_area * aspect_ratio)))
+            target_height = int(round(math.sqrt(target_area / aspect_ratio)))
+
+            if 0 < target_width <= width and 0 < target_height <= height:
+                ymin = random.randint(0, height - target_height)
+                xmin = random.randint(0, width - target_width)
+                ymax = ymin + target_height - 1
+                xmax = xmin + target_width - 1
+                return ymin, xmin, ymax, xmax
+
+        # Fallback to central crop
+        in_ratio = float(width) / float(height)
+        if in_ratio < min(ratio):
+            target_width = width
+            target_height = int(round(target_width / min(ratio)))
+        elif in_ratio > max(ratio):
+            target_height = height
+            target_width = int(round(target_height * max(ratio)))
+        else:  # whole image
+            target_width = width
+            target_height = height
+        ymin = (height - target_height) // 2
+        xmin = (width - target_width) // 2
+        ymax = ymin + target_height - 1
+        xmax = xmin + target_width - 1
+        return ymin, xmin, ymax, xmax
+
+    def transform(self, results: dict) -> dict:
+        """Randomly crop the image and resize the image to the target size.
+
+        Args:
+            results (dict): Result dict from previous pipeline.
+
+        Returns:
+            dict: Result dict with the transformed image.
+        """
+        img = results['img']
+
+        get_params_args = dict(
+            img=img,
+            scale=self.scale,
+            ratio=self.ratio,
+            max_attempts=self.max_attempts)
+        ymin, xmin, ymax, xmax = self.get_params(**get_params_args)
+        img = mmcv.imcrop(img, bboxes=np.array([xmin, ymin, xmax, ymax]))
+        results['img'] = mmcv.imresize(
+            img,
+            tuple(self.size[::-1]),
+            interpolation=self.interpolation,
+            backend=self.backend)
+        results['img_shape'] = results['img'].shape[:2]
+        
+        seg_map = results['gt_seg_mask']
+        seg_map = mmcv.imcrop(seg_map, bboxes=np.array([xmin, ymin, xmax, ymax]))
+        results['gt_seg_mask'] = mmcv.imresize(
+            seg_map,
+            tuple(self.size[::-1]),
+            interpolation='nearest',
+            backend=self.backend)
+        # print('seg_map.shape', results['gt_seg_mask'].shape)
+        # print('results[img_shape]', results['img_shape'])
+        return results
+
+    def __repr__(self) -> str:
+        repr_str = self.__class__.__name__ + f'(size={self.size}'
+        repr_str += f', scale={tuple(round(s, 4) for s in self.scale)}'
+        repr_str += f', ratio={tuple(round(r, 4) for r in self.ratio)}'
+        repr_str += f', max_attempts={self.max_attempts}'
+        repr_str += f', interpolation={self.interpolation}'
+        repr_str += f', backend={self.backend})'
+        return repr_str
+
+
 
 @TRANSFORMS.register_module()
 class RandomResizedCrop(BaseTransform):
@@ -973,6 +1215,7 @@ class RandomResizedCrop(BaseTransform):
             max_attempts=self.max_attempts)
         ymin, xmin, ymax, xmax = self.get_params(**get_params_args)
         img = mmcv.imcrop(img, bboxes=np.array([xmin, ymin, xmax, ymax]))
+
         results['img'] = mmcv.imresize(
             img,
             tuple(self.size[::-1]),

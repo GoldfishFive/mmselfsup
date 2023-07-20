@@ -40,6 +40,7 @@ class SelfSupDataPreprocessor(ImgDataPreprocessor):
         data = [val for _, val in data.items()]
         batch_inputs, batch_data_samples = self.cast_data(data)
         # channel transform
+        # print(batch_inputs)
         if self._channel_conversion:
             batch_inputs = [
                 _input[:, [2, 1, 0], ...] for _input in batch_inputs

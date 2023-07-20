@@ -9,7 +9,7 @@ from mmselfsup.registry import DATASETS
 from mmengine.fileio import list_from_file
 
 @DATASETS.register_module()
-class ImageList(CustomDataset):
+class SegMAEImageList(CustomDataset):
     """The dataset implementation for loading any image list file.
 
     The `ImageList` can load an annotation file or a list of files and merge
@@ -65,6 +65,7 @@ class ImageList(CustomDataset):
                  ann_file: str,
                  metainfo: Optional[dict] = None,
                  data_root: str = '',
+                 ann_root: str = '',
                  data_prefix: Union[str, dict] = '',
                  **kwargs) -> None:
         kwargs = {'extensions': self.IMG_EXTENSIONS, **kwargs}
@@ -73,7 +74,10 @@ class ImageList(CustomDataset):
             metainfo=metainfo,
             data_root=data_root,
             data_prefix=data_prefix,
+            lazy_init=True,
             **kwargs)
+        self.ann_root = ann_root
+        print('self.ann_root', self.ann_root)
 
     def load_data_list(self) -> List[dict]:
         """Rewrite load_data_list() function for supporting annotation files
@@ -82,33 +86,15 @@ class ImageList(CustomDataset):
         Returns:
             List[dict]: A list of data information.
         """
-        # assert self.ann_file != ''
-        # with open(self.ann_file, 'r') as f:
-        #     self.samples = f.readlines()
-        # self.has_labels = len(self.samples[0].split()) == 2
-        #
-        # data_list = []
-        # for sample in self.samples:
-        #     info = {'img_prefix': self.img_prefix}
-        #     sample = sample.split()
-        #     info['img_path'] = join_path(self.img_prefix, sample[0])
-        #     info['img_info'] = {'filename': sample[0]}
-        #     labels = sample[1] if self.has_labels else -1
-        #     info['gt_label'] = np.array(labels, dtype=np.int64)
-        #     data_list.append(info)
-        # return data_list
 
-        if not self.ann_file:
-            samples = self._find_samples()
-        else:
-            # assert self.ann_file == ''
-            lines = list_from_file(self.ann_file)
-            samples = [x.strip().rsplit(' ', 1) for x in lines]
+        samples = self._find_samples()
 
         data_list = []
         # print(samples)
         for filename, gt_label in samples:
             img_path = join_path(self.img_prefix, filename)
-            info = {'img_path': img_path, 'gt_label': int(gt_label)}
+            fh_seg_path = join_path(self.ann_root, filename.replace('JPEG','npy'))
+            # print('fh_seg_path', fh_seg_path)
+            info = {'img_path': img_path, 'gt_label': int(gt_label), 'fh_seg': fh_seg_path}
             data_list.append(info)
         return data_list

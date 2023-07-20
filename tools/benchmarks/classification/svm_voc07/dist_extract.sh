@@ -11,5 +11,5 @@ PORT=${PORT:-29500}
 PYTHONPATH="$(dirname $0)/..":$PYTHONPATH \
 python -m torch.distributed.launch --nproc_per_node=$GPUS --master_port=$PORT \
     tools/benchmarks/classification/svm_voc07/extract.py $CFG \
-    --layer-ind "0,1,2,3,4" --work_dir $WORK_DIR \
+    --layer-ind "0,1,2,3,4" --work-dir $WORK_DIR \
     --launcher pytorch ${PY_ARGS}
