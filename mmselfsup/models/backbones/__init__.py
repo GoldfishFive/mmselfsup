@@ -10,6 +10,7 @@ from .resnet import ResNet, ResNetSobel, ResNetV1d
 from .resnext import ResNeXt
 from .simmim_swin import SimMIMSwinTransformer
 from .segmae_vit import SegMAEViT
+from .segmae_vit_vr import SegMAEVit_VR
 
 __all__ = [
     'ResNet', 'ResNetSobel', 'ResNetV1d', 'ResNeXt', 'MAEViT', 'MoCoV3ViT',

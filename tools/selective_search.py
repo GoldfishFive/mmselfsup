@@ -1,3 +1,4 @@
+import multiprocessing
 import os
 
 import cv2
@@ -85,9 +86,80 @@ def get_rect(img):
     # close image show window
     cv2.destroyAllWindows()
 
+def mul_FH_seg(img_path):
+    img = cv2.imread(img_path)
+    # skimage自带的felzenszwalb算法
+    # save_root = '/media/data1/wjy/dataset/ImageNet1k/imagenet_val_FH_500_500/'
+    save_root = '/media/data1/wjy/dataset/ImageNet1k/imagenet_val_FH_500_500/'
+    sigma = 0.8
+    K, min_size = 500, 500
+    seg = felzenszwalb(img, scale=K, sigma=sigma, min_size=min_size)
+    save_data = {'seg': seg.astype(np.uint8), 'num_parts': len(np.unique(seg))}
+    c = os.path.basename(os.path.dirname(img_path)) # class name
+    i = os.path.basename(img_path)
+    np.save(os.path.join(save_root, c, i.replace('JPEG', 'npy')), save_data)
+
+def deal_imagenet1k_val():
+    dataset_root = '/media/data1/wjy/dataset/ImageNet1k/imagenet1k_val'
+    save_root = '/media/data1/wjy/dataset/ImageNet1k/imagenet_val_FH_500_500/'
+    '/media/data1/wjy/dataset/ImageNet1k/imagenet_val_FH_500_500/'
+    sigma = 0.8
+    kernel = 11
+    K, min_size = 500, 500
+    count = 0
+    img_list = []
+    for c in os.listdir(dataset_root):
+        c_root = os.path.join(dataset_root,c)
+        os.makedirs(os.path.join(save_root, c),exist_ok=True)
+        for i in os.listdir(c_root):
+            img_list.append(os.path.join(c_root, i))
+            # count += 1
+            # if i.replace('JPEG','npy') in  os.listdir(os.path.join(save_root, c)):
+            #     continue
+            # img = cv2.imread(os.path.join(c_root, i))
+            # # skimage自带的felzenszwalb算法
+            # seg = felzenszwalb(img, scale=K, sigma=sigma, min_size=min_size)
+            # save_data = {'seg':seg.astype(np.uint8), 'num_parts': len(np.unique(seg))}
+            # np.save(os.path.join(save_root, c, i.replace('JPEG','npy')), save_data)
+            # print(count)
+    pool = multiprocessing.Pool(processes=10)
+    # 维持执行的进程总数为processes，当一个进程执行完毕后会添加新的进程进去
+    pool.map(mul_FH_seg, img_list)
+
+    pool.close()
+    pool.join()
+
+
+
+def mulpool_COCOtrain_FH(img_path):
+    img = cv2.imread(img_path)
+    # skimage自带的felzenszwalb算法
+    save_root = '/home/data1/group1/datasets/COCO2017/COCO_2017/raw/Images/COCO_Train_FH_500_500'
+    sigma = 0.8
+    K, min_size = 500, 500
+    seg = felzenszwalb(img, scale=K, sigma=sigma, min_size=min_size)
+    save_data = {'seg': seg.astype(np.uint8), 'num_parts': len(np.unique(seg))}
+    i = os.path.basename(img_path) # file name
+    # print(i)
+    np.save(os.path.join(save_root, i.replace('jpg', 'npy')), save_data)
+    pass
+
+def deal_COCO_Train():
+    dataset_root = '/home/data1/group1/datasets/COCO2017/COCO_2017/raw/Images/train2017'
+    img_list = []
+    for i in os.listdir(dataset_root):
+        img_list.append(os.path.join(dataset_root, i))
+    pool = multiprocessing.Pool(processes=10)
+    # 维持执行的进程总数为processes，当一个进程执行完毕后会添加新的进程进去
+    pool.map(mulpool_COCOtrain_FH, img_list)
+
+    pool.close()
+    pool.join()
 
 
 if __name__ == '__main__':
+    deal_COCO_Train()
+    exit()
     dataset_root = '/home/user01/datasets/imagenet_val/'
     save_root = '/home/data1/group1/datasets/imagenet_val_FH_500_500/'
     sigma = 0.8
