@@ -1,7 +1,7 @@
 _base_ = [
-    '../../_base_/datasets/val_imagenet_segmae_fh.py',
-    '../../_base_/schedules/adamw_coslr-200e_in1k.py',
-    '../../_base_/default_runtime.py',
+    '../_base_/datasets/val_imagenet_segmae_fh_entropy.py',
+    '../_base_/schedules/adamw_coslr-200e_in1k.py',
+    '../_base_/default_runtime.py',
 ]
 # model settings
 model = dict(
@@ -11,14 +11,14 @@ model = dict(
         std=[58.395, 57.12, 57.375],
         bgr_to_rgb=True),
     backbone=dict(
-        type='SegMAEViT',
-        arch='small',
+        type='SegMAEVit_VR',
+        arch='b',
         patch_size=16,
-        mask_ratio=0.70,
-        fix_mask_ratio=True,# True used the fixed mask_ratio 0.75 during training;
+        mask_ratio=0.75,
+        fix_mask_ratio=False,# True used the fixed mask_ratio 0.75 during training;
         max_epochs=300, # when fix_mask_ratio is False, mask_ratio change from low_mask_ratio to high_mask_ratio
         low_mask_ratio=0.35,
-        high_mask_ratio=0.85
+        high_mask_ratio=0.75
     ),
     neck=dict(
         type='MAEPretrainDecoder',
@@ -41,13 +41,8 @@ model = dict(
     ])
 
 # dataset 8 x 128
-train_dataloader = dict(batch_size=96, num_workers=16)
-# total_batch = 4096
-# total_batch = 1024
-# total_batch = 256
-# total_batch = 768
-#total_batch = 384
-total_batch = 96
+train_dataloader = dict(batch_size=64, num_workers=8)
+total_batch = 64
 # optimizer wrapper
 optimizer = dict(
     type='AdamW', lr=1.5e-4 * total_batch / 256, betas=(0.9, 0.95), weight_decay=0.05)

@@ -1,0 +1,11 @@
+{
+"name": "mae_deit-t_100e_pretrain",
+"cwd": "/home/user01/projects/ssl/mmselfsup",
+"script": "/home/user01/projects/ssl/mmselfsup/tools/train.py",
+"args": "configs/selfsup/_custom/tiny/mae_deit-tiny_100e_in1kval.py",
+"interpreter": "/home/user01/miniconda3/envs/mmpre/bin/python",
+"out_file": "/home/user01/projects/ssl/mmselfsup/work_dirs/selfsup/mae_deit-tiny_100e_in1kval/info.log",
+"error_file": "/home/user01/projects/ssl/mmselfsup/work_dirs/selfsup/mae_deit-tiny_100e_in1kval/error.log",
+"env": {"CUDA_VISIBLE_DEVICES":6},
+"autorestart" :false
+}

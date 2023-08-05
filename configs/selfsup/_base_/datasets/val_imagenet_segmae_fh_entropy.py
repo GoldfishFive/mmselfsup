@@ -17,7 +17,7 @@ train_pipeline = [
         backend='pillow',
         interpolation='bicubic'),
     dict(type='RandomFlip', prob=0.5), # plan to give up
-    dict(type='PackSelfSupInputs', meta_keys=['img_path','gt_seg_mask', 'num_of_objects'])
+    dict(type='PackSelfSupInputs', meta_keys=['img_path','gt_seg_mask', 'num_of_objects', 'unique_part', 'entropy'])
 ]
 
 train_dataloader = dict(

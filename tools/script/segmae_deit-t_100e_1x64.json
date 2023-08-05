@@ -1,0 +1,11 @@
+{
+"name": "segmae_vr_deit-tiny_100e_in1kval_gpu1",
+"cwd": "/home/user01/projects/ssl/mmselfsup",
+"script": "/home/user01/projects/ssl/mmselfsup/tools/train.py",
+"args": "configs/selfsup/_custom/tiny/segmae_vr_deit-tiny_100e_in1kval_1xb64.py",
+"interpreter": "/home/user01/miniconda3/envs/mmpre/bin/python",
+"out_file": "/home/user01/projects/ssl/mmselfsup/work_dirs/selfsup/segmae_vr_deit-tiny_100e_in1kval_1xb64/info.log",
+"error_file": "/home/user01/projects/ssl/mmselfsup/work_dirs/selfsup/segmae_vr_deit-tiny_100e_in1kval_1xb64/error.log",
+"env": {"CUDA_VISIBLE_DEVICES":5},
+"autorestart" :false
+}

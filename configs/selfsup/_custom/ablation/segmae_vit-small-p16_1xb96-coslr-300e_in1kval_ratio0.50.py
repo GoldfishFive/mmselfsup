@@ -1,7 +1,7 @@
 _base_ = [
-    '../_base_/datasets/val_imagenet_segmae_fh.py',
-    '../_base_/schedules/adamw_coslr-200e_in1k.py',
-    '../_base_/default_runtime.py',
+    '../../_base_/datasets/val_imagenet_segmae_fh.py',
+    '../../_base_/schedules/adamw_coslr-200e_in1k.py',
+    '../../_base_/default_runtime.py',
 ]
 # model settings
 model = dict(
@@ -42,11 +42,6 @@ model = dict(
 
 # dataset 8 x 128
 train_dataloader = dict(batch_size=96, num_workers=16)
-# total_batch = 4096
-# total_batch = 1024
-# total_batch = 256
-# total_batch = 768
-#total_batch = 384
 total_batch = 96
 # optimizer wrapper
 optimizer = dict(

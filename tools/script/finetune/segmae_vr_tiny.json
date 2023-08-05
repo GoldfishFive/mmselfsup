@@ -1,0 +1,10 @@
+{
+    "name": "segmae_vr_tiny_fine-tune",
+    "cwd": "/home/user01/projects/ssl/mmselfsup",
+    "script": "./tools/benchmarks/mmsegmentation/mim_dist_train.sh",
+    "args": "configs/benchmarks/mmsegmentation/voc12aug/mae-tiny_upernet_1xb2-amp-20k_voc2012-512x512.py /home/user01/projects/ssl/mmselfsup/work_dirs/selfsup/segmae_vr_deit-tiny_100e_in1kval_1xb64/epoch_100.pth 8",
+    "merge_logs": true,
+    "error_file": "tools/run-log-analyze.log",
+    "out_file": "tools/run-log-analyze.log",
+    "autorestart" :false
+  }

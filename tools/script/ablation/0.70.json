@@ -1,0 +1,12 @@
+{
+"name": "wjy_ratio0.70",
+"cwd": "/home/user01/projects/ssl/mmselfsup",
+"script": "/home/user01/projects/ssl/mmselfsup/tools/train.py",
+"args": "configs/selfsup/_custom/ablation/segmae_vit-small-p16_1xb96-coslr-300e_in1kval_ratio0.70.py ",
+"interpreter": "/home/user01/miniconda3/envs/mmpre/bin/python",
+"out_file": "/home/user01/projects/ssl/mmselfsup/work_dirs/selfsup/segmae_vit-small-p16_1xb96-coslr-300e_in1kval_ratio0.70/info.log",
+"error_file": "/home/user01/projects/ssl/mmselfsup/work_dirs/selfsup/segmae_vit-small-p16_1xb96-coslr-300e_in1kval_ratio0.70/error.log",
+"env": {"CUDA_VISIBLE_DEVICES":4},
+"autorestart" :false
+}
+

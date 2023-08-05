@@ -1,0 +1,10 @@
+{
+    "name": "mae_base_fine-tune_12e",
+    "cwd": "/home/user01/projects/ssl/mmselfsup",
+    "script": "./tools/benchmarks/mmsegmentation/mim_dist_train.sh",
+    "args": "configs/benchmarks/mmsegmentation/voc12aug/mae-base_upernet_8xb2-amp-60k_voc2012-512x512.py /home/user01/projects/ssl/mmselfsup/work_dirs/selfsup/mae_vit-base-p16_8xb128-coslr-300e_in1kval/origin_epoch_300.pth 8",
+    "merge_logs": true,
+    "error_file": "tools/run-log-analyze.log",
+    "out_file": "tools/run-log-analyze.log",
+    "autorestart" :false
+  }

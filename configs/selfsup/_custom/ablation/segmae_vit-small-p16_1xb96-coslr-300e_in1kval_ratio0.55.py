@@ -1,7 +1,7 @@
 _base_ = [
-    '../_base_/datasets/val_imagenet_segmae_fh.py',
-    '../_base_/schedules/adamw_coslr-200e_in1k.py',
-    '../_base_/default_runtime.py',
+    '../../_base_/datasets/val_imagenet_segmae_fh.py',
+    '../../_base_/schedules/adamw_coslr-200e_in1k.py',
+    '../../_base_/default_runtime.py',
 ]
 # model settings
 model = dict(

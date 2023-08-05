@@ -1,7 +1,7 @@
 _base_ = [
-    '../_base_/datasets/val_imagenet_segmae_fh.py',
-    '../_base_/schedules/adamw_coslr-200e_in1k.py',
-    '../_base_/default_runtime.py',
+    '../../_base_/datasets/val_imagenet_segmae_fh.py',
+    '../../_base_/schedules/adamw_coslr-200e_in1k.py',
+    '../../_base_/default_runtime.py',
 ]
 # model settings
 model = dict(
@@ -14,7 +14,7 @@ model = dict(
         type='SegMAEViT',
         arch='small',
         patch_size=16,
-        mask_ratio=0.60,
+        mask_ratio=0.65,
         fix_mask_ratio=True,# True used the fixed mask_ratio 0.75 during training;
         max_epochs=300, # when fix_mask_ratio is False, mask_ratio change from low_mask_ratio to high_mask_ratio
         low_mask_ratio=0.35,
@@ -42,12 +42,8 @@ model = dict(
 
 # dataset 8 x 128
 train_dataloader = dict(batch_size=96, num_workers=16)
-# total_batch = 4096
-# total_batch = 1024
-# total_batch = 256
-# total_batch = 768
-#total_batch = 384
-total_batch = 96
+total_batch = 96*3
+
 # optimizer wrapper
 optimizer = dict(
     type='AdamW', lr=1.5e-4 * total_batch / 256, betas=(0.9, 0.95), weight_decay=0.05)

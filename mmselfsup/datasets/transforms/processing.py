@@ -904,6 +904,7 @@ class LoadFHSegMap(BaseTransform):
         seg_map = np.load(map_path, allow_pickle=True).item()
         results['gt_seg_mask'] = seg_map['seg']
         results['num_of_objects'] = seg_map['num_parts']
+        results['entropy'] = seg_map['entropy']
         return results
 
     def __repr__(self) -> str:
@@ -1065,6 +1066,10 @@ class SegRandomResizedCrop(BaseTransform):
             backend=self.backend)
         # print('seg_map.shape', results['gt_seg_mask'].shape)
         # print('results[img_shape]', results['img_shape'])
+        unique_part = np.unique(results['gt_seg_mask'])
+        results['unique_part'] = unique_part
+        # results['num_of_objects'] = len(unique_part) #加了之后源代码 报错
+
         return results
 
     def __repr__(self) -> str:

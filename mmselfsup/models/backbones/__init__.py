@@ -15,5 +15,5 @@ from .segmae_vit_vr import SegMAEVit_VR
 __all__ = [
     'ResNet', 'ResNetSobel', 'ResNetV1d', 'ResNeXt', 'MAEViT', 'MoCoV3ViT',
     'SimMIMSwinTransformer', 'CAEViT', 'MaskFeatViT', 'BEiTViT', 'MILANViT',
-    'MixMIMTransformerPretrain', 'SegMAEViT'
+    'MixMIMTransformerPretrain', 'SegMAEViT' ,'SegMAEVit_VR'
 ]
