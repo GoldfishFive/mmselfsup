@@ -1,0 +1,10 @@
+{
+    "name": "mae_base_20ep_12eft",
+    "cwd": "/home/user01/projects/ssl/mmselfsup",
+    "script": "./tools/benchmarks/mmsegmentation/mim_dist_train.sh",
+    "args": "configs/benchmarks/mmsegmentation/voc12aug/mae-base_upernet_8xb2-amp-12e_voc2012-512x512.py /home/data1/group1/projects/work_dirs/mae_vit-base_300e_in1kval/epoch_12.pth 6",
+    "merge_logs": true,
+    "error_file": "/home/data1/group1/projects/work_dirs/mae_vit-base_300e_in1kval/info.log",
+    "out_file": "/home/data1/group1/projects/work_dirs/mae_vit-base_300e_in1kval/info.log",
+    "autorestart" :false
+  }

@@ -1,0 +1,10 @@
+{
+    "name": "mae_base_bs96_150e_tinyimanet_ft",
+    "cwd": "/home/user01/projects/ssl/mmselfsup",
+    "script": "./tools/benchmarks/classification/mim_dist_train.sh",
+    "args": "configs/benchmarks/classification/tiny_imagenet/vit-base-p16_ft-8xb96-coslr-150e_tinyin1k.py work_dirs/selfsup/mae_vit-base-p16_8xb128-coslr-300e_in1kval/origin_epoch_300.pth",
+    "merge_logs": false,
+    "error_file": "/home/user01/projects/ssl/mmselfsup/work_dirs/benchmarks/classification/tiny_imagenet/vit-base-p16_ft-8xb96-coslr-150e_tinyin1k/origin_epoch_300.pth/error.log",
+    "out_file": "/home/user01/projects/ssl/mmselfsup/work_dirs/benchmarks/classification/tiny_imagenet/vit-base-p16_ft-8xb96-coslr-150e_tinyin1k/origin_epoch_300.pth/info.log",
+    "autorestart" :false
+  }

@@ -1,0 +1,10 @@
+{
+    "name": "segmae_vr_base_10ep_20kiter",
+    "cwd": "/home/user01/projects/ssl/mmselfsup",
+    "script": "./tools/benchmarks/mmsegmentation/mim_dist_train.sh",
+    "args": "configs/benchmarks/mmsegmentation/voc12aug/mae-base_upernet_8xb2-amp-60k_voc2012-512x512.py /home/data1/group1/projects/work_dirs/segmaevr_vit-base_300e_in1kval/epoch_10.pth 6",
+    "merge_logs": false,
+    "error_file": "/home/data1/group1/projects/work_dirs/segmaevr_vit-base_300e_in1kval/info.log",
+    "out_file": "/home/data1/group1/projects/work_dirs/segmaevr_vit-base_300e_in1kval/error.log",
+    "autorestart" :false
+  }

@@ -3,6 +3,7 @@
 "cwd": "/home/user01/projects/ssl/mmselfsup",
 "script": "/home/user01/projects/ssl/mmselfsup/tools/train.py",
 "args": "configs/selfsup/_custom/segmae_vit-base-p16_coslr-300e_in1kval_fh_VR.py",
+
 "interpreter": "/home/user01/miniconda3/envs/mmpre/bin/python",
 "out_file": "/home/user01/projects/ssl/mmselfsup/work_dirs/selfsup/segmae_vit-base-p16_coslr-300e_in1kval_fh_VR/info.log",
 "error_file": "/home/user01/projects/ssl/mmselfsup/work_dirs/selfsup/segmae_vit-base-p16_coslr-300e_in1kval_fh_VR/error.log",

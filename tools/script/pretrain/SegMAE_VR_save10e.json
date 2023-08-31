@@ -1,0 +1,12 @@
+{
+"name": "SegMAE_VR_save10e",
+"cwd": "/home/user01/projects/ssl/mmselfsup",
+"script": "/home/user01/projects/ssl/mmselfsup/tools/train.py",
+"args": "configs/selfsup/_custom/pretrain/segmaevr_vit-base_300e_in1kval.py --work-dir /home/data1/group1/projects/work_dirs/segmaevr_vit-base_300e_in1kval",
+
+"interpreter": "/home/user01/miniconda3/envs/mmpre/bin/python",
+"out_file": "/home/data1/group1/projects/work_dirs/segmaevr_vit-base_300e_in1kval/info.log",
+"error_file": "/home/data1/group1/projects/work_dirs/segmaevr_vit-base_300e_in1kval/error.log",
+"env": {"CUDA_VISIBLE_DEVICES":7},
+"autorestart" :false
+}
